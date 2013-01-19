@@ -11,6 +11,8 @@ tmp/
 *.bak
 *.swp
 *~.nib
+.jar
+native/
 local.properties
 .classpath
 .settings/
@@ -162,6 +164,3 @@ pip-log.txt
 # Mac crap
 .DS_Store
 
-# JARs and natives
-.native
-.jar
