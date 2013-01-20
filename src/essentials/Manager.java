@@ -48,6 +48,49 @@ public class Manager {
 			makeZombie();
 			timekeeper.start();
 		}
+		zombieLogic();
+		humanLogic();
+		bulletLogic();
+		gunLogic(mouseX, mouseY);
+		knifeLogic(mouseX, mouseY);
+		detectPlayerCollisions();
+		if(benchmark){
+			System.out.println(benchmarker.getElapsedTime());
+			System.out.println(benchmarker.getMemoryUsage());
+			benchmarker.reset();
+		}
+	}
+	public void render(){
+		villagegen.loop(man.x, man.y);
+		for(int i = 0; i < zombieNumber; i++)
+			zombie[i].draw();
+		for(int i = 0; i < humanNumber; i++)
+			human[i].draw();
+		man.draw();
+		for(int i = 0; i < bulletNumber; i++)
+			if(!bullet[i].done)
+				bullet[i].draw();
+		for(int i = 0; i < gunNumber; i++)
+			gun[i].draw();
+		for(int i = 0; i < knifeNumber; i++)
+			knife[i].draw();
+	}
+	public void movePlayer(int direction){
+		if(man.dead == false){
+			man.oldX = man.x;
+			man.oldY = man.y;
+			if(direction == Directions.UP)
+				man.y -= man.SPEED;
+			if(direction == Directions.RIGHT)
+				man.x += man.SPEED;
+			if(direction == Directions.DOWN)
+				man.y += man.SPEED;
+			if(direction == Directions.LEFT)
+				man.x -= man.SPEED;
+			detectPlayerCollisions();
+		}
+	}
+	private void zombieLogic(){
 		for(int i = 0; i < zombieNumber; i++){
 			if(!zombie[i].dead){
 				moveZombie(i);
@@ -84,6 +127,8 @@ public class Manager {
 				}
 			}
 		}
+	}
+	private void humanLogic(){
 		for(int i = 0; i < humanNumber; i++){
 			if(!human[i].dead){
 				human[i].zombieNear = isZombieNear(i);
@@ -117,6 +162,8 @@ public class Manager {
 				}
 			}
 		}
+	}
+	private void bulletLogic(){
 		for(int i = 0; i < bulletNumber; i++){
 			if(!bullet[i].done){
 				bullet[i].move();
@@ -157,6 +204,8 @@ public class Manager {
 				}
 			}
 		}
+	}
+	private void gunLogic(float mouseX, float mouseY){
 		for(int i = 0; i < gunNumber; i++){
 			if(!man.dead)
 				gun[i].move(man.x, man.y, mouseX, mouseY);
@@ -166,6 +215,8 @@ public class Manager {
 				man.hasGun = true;
 			}
 		}
+	}
+	private void knifeLogic(float mouseX, float mouseY){
 		for(int i = 0; i < knifeNumber; i++){
 			if(!man.dead && knife[i].equippedBy == ID.PLAYER)
 				knife[i].move(man.x, man.y, mouseX, mouseY, man.hasGun);
@@ -215,42 +266,6 @@ public class Manager {
 					if(detectCollision(man.getRectangle(), knife[i].getRectangle()))
 						man.dead = true;
 			}
-		}
-		detectPlayerCollisions();
-		if(benchmark){
-			System.out.println(benchmarker.getElapsedTime());
-			System.out.println(benchmarker.getMemoryUsage());
-			benchmarker.reset();
-		}
-	}
-	public void render(){
-		villagegen.loop(man.x, man.y);
-		for(int i = 0; i < zombieNumber; i++)
-			zombie[i].draw();
-		for(int i = 0; i < humanNumber; i++)
-			human[i].draw();
-		man.draw();
-		for(int i = 0; i < bulletNumber; i++)
-			if(!bullet[i].done)
-				bullet[i].draw();
-		for(int i = 0; i < gunNumber; i++)
-			gun[i].draw();
-		for(int i = 0; i < knifeNumber; i++)
-			knife[i].draw();
-	}
-	public void movePlayer(int direction){
-		if(man.dead == false){
-			man.oldX = man.x;
-			man.oldY = man.y;
-			if(direction == Directions.UP)
-				man.y -= man.SPEED;
-			if(direction == Directions.RIGHT)
-				man.x += man.SPEED;
-			if(direction == Directions.DOWN)
-				man.y += man.SPEED;
-			if(direction == Directions.LEFT)
-				man.x -= man.SPEED;
-			detectPlayerCollisions();
 		}
 	}
 	public void createZombieSurround(float x, float y, int zombies, float radius){
