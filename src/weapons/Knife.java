@@ -56,4 +56,9 @@ public class Knife {
 		}
 		return rectangle;
 	}
+	public void reset(){
+		equipped = false;
+		equippedBy = 50;
+		equippedNumber = 101;
+	}
 }

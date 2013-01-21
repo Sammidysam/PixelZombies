@@ -113,6 +113,10 @@ public class Manager {
 						human[u].zombieNear = isZombieNear(u);
 						if(detectCollision(human[u].getRectangle(), zombie[i].getRectangle())){
 							human[u].show = false;
+							for(int y = 0; y < knifeNumber; y++)
+								if(knife[y].equipped && knife[y].equippedBy == ID.HUMAN)
+									if(knife[y].equippedNumber == u)
+										knife[y].reset();
 							createNew(ID.ZOMBIE, human[u].x, human[u].y);
 						}
 					}
@@ -134,12 +138,15 @@ public class Manager {
 				human[i].zombieNear = isZombieNear(i);
 				human[i].gunNear = isGunNear(i);
 				human[i].knifeNear = isKnifeNear(i);
+				human[i].bulletNear = isBulletNear(i);
 				if(human[i].zombieNear)
 					zombieHumanMovement(i, zombie[human[i].nearestZombie].x, zombie[human[i].nearestZombie].y);
 				if(human[i].gunNear)
 					zombieHumanMovement(i, gun[human[i].nearestGun].x, gun[human[i].nearestGun].y);
 				if(human[i].knifeNear)
 					zombieHumanMovement(i, knife[human[i].nearestKnife].x, knife[human[i].nearestKnife].y);
+				if(human[i].bulletNear && human[i].hasGun)
+					zombieHumanMovement(i, bullet[human[i].nearestBullet].x, bullet[human[i].nearestBullet].y);
 				human[i].move();
 				for(int y = 0; y < villagegen.cabinNumber; y++){
 					if(detectCollision(villagegen.cabin[y].getRectangle(), human[i].getRectangle()))
@@ -201,19 +208,42 @@ public class Manager {
 						bullet[i].done = true;
 						man.bullets++;
 					}
+					for(int y = 0; y < humanNumber; y++)
+						if(detectCollision(human[y].getRectangle(), bullet[i].getRectangle())){
+							bullet[i].done = true;
+							human[y].bullets++;
+						}
 				}
 			}
 		}
 	}
 	private void gunLogic(float mouseX, float mouseY){
 		for(int i = 0; i < gunNumber; i++){
-			if(!man.dead)
+			if(!man.dead && gun[i].equippedBy == ID.PLAYER)
 				gun[i].move(man.x, man.y, mouseX, mouseY);
-			if(detectCollision(man.getRectangle(), gun[i].getRectangle())){
+			if(gun[i].equippedBy == ID.HUMAN)
+				if(!human[gun[i].equippedNumber].dead && human[gun[i].equippedNumber].show){
+					float pointX = human[gun[i].equippedNumber].x + (Human.WIDTH * 2), pointY = human[gun[i].equippedNumber].y + Human.HEIGHT;
+					if(zombie[human[gun[i].equippedNumber].nearestZombie] != null)
+						if(!zombie[human[gun[i].equippedNumber].nearestZombie].dead && human[gun[i].equippedNumber].zombieNear){
+							pointX = zombie[human[gun[i].equippedNumber].nearestZombie].x;
+							pointY = zombie[human[gun[i].equippedNumber].nearestZombie].y;
+						}
+					gun[i].move(human[gun[i].equippedNumber].x, human[gun[i].equippedNumber].y, pointX, pointY);
+				}
+			if(!gun[i].equipped && detectCollision(man.getRectangle(), gun[i].getRectangle())){
 				gun[i].equipped = true;
+				gun[i].equippedBy = ID.PLAYER;
 				man.gun = i;
 				man.hasGun = true;
 			}
+			for(int y = 0; y < humanNumber; y++)
+				if(!gun[i].equipped && detectCollision(human[y].getRectangle(), gun[i].getRectangle())){
+					human[y].hasGun = true;
+					gun[i].equipped = true;
+					gun[i].equippedBy = ID.HUMAN;
+					gun[i].equippedNumber = y;
+				}
 		}
 	}
 	private void knifeLogic(float mouseX, float mouseY){
@@ -222,8 +252,7 @@ public class Manager {
 				knife[i].move(man.x, man.y, mouseX, mouseY, man.hasGun);
 			if(knife[i].equippedBy == ID.HUMAN)
 				if(!human[knife[i].equippedNumber].dead && human[knife[i].equippedNumber].show){
-					float pointX = human[knife[i].equippedNumber].x + (Human.WIDTH * 2);
-					float pointY = human[knife[i].equippedNumber].y + Human.HEIGHT;
+					float pointX = human[knife[i].equippedNumber].x + (Human.WIDTH * 2), pointY = human[knife[i].equippedNumber].y + Human.HEIGHT;
 					if(zombie[human[knife[i].equippedNumber].nearestZombie] != null)
 						if(!zombie[human[knife[i].equippedNumber].nearestZombie].dead && human[knife[i].equippedNumber].zombieNear){
 							pointX = zombie[human[knife[i].equippedNumber].nearestZombie].x;
@@ -248,6 +277,7 @@ public class Manager {
 					if(!zombie[u].dead)
 						if(detectCollision(zombie[u].getRectangle(), knife[i].getRectangle())){
 							zombie[u].dead = true;
+							System.out.println("zombie died of knife");
 							for(int y = 0; y < rand.nextInt(3); y++)
 								createNew(ID.STATICBULLET, zombie[u].x + rand.nextInt(10) - 5, zombie[u].y + rand.nextInt(10) - 5);
 						}
@@ -269,8 +299,7 @@ public class Manager {
 		}
 	}
 	public void createZombieSurround(float x, float y, int zombies, float radius){
-		int circle = 360;
-		int divisor = 1;
+		int circle = 360, divisor = 1;
 		if(zombies > 360){
 			circle = 36000;
 			divisor = 100;
@@ -332,7 +361,6 @@ public class Manager {
 		}
 	}
 	private void populateVillage(){
-		Random rand = new Random();
 		for(int x = -200, y = 0; x < 200; x += 50){
 			x += rand.nextInt(10);
 			y += rand.nextInt(50);
@@ -387,9 +415,7 @@ public class Manager {
 		}
 	}
 	private void makeZombie(){
-		Random rand = new Random();
-		boolean created = false;
-		boolean canCreate = false;
+		boolean created = false, canCreate = false;
 		for(int i = 0; i < humanNumber; i++){
 			if(human[i].show)
 				canCreate = true;
@@ -399,6 +425,10 @@ public class Manager {
 				int which = rand.nextInt(humanNumber);
 				if(human[which].show){
 					human[which].show = false;
+					for(int u = 0; u < knifeNumber; u++)
+						if(knife[u].equipped && knife[u].equippedBy == ID.HUMAN)
+							if(knife[u].equippedNumber == which)
+								knife[u].reset();
 					createNew(ID.ZOMBIE, human[which].x, human[which].y);
 					created = true;
 				}
@@ -406,8 +436,7 @@ public class Manager {
 		}
 	}
 	private void moveZombie(int zombieID){
-		int lowest = (int) Math.sqrt(Math.pow((man.x - zombie[zombieID].x), 2) + Math.pow((man.y - zombie[zombieID].y), 2));
-		int humanID = humanNumber;
+		int lowest = (int) Math.sqrt(Math.pow((man.x - zombie[zombieID].x), 2) + Math.pow((man.y - zombie[zombieID].y), 2)), humanID = humanNumber;
 		for(int i = 0; i < humanNumber; i++){
 			if(human[i].show && !human[i].dead){
 				int humanDistance = (int) Math.sqrt(Math.pow((human[i].x - zombie[zombieID].x), 2) + Math.pow((human[i].y - zombie[zombieID].y), 2));
@@ -460,6 +489,19 @@ public class Manager {
 			}
 		}
 		return knifeNear;
+	}
+	private boolean isBulletNear(int humanID){
+		boolean bulletNear = false;
+		for(int i = 0; i < bulletNumber; i++){
+			if(!bullet[i].done){
+				int distance = (int) Math.sqrt(Math.pow((human[humanID].x - bullet[i].x), 2) + Math.pow((human[humanID].y - bullet[i].y), 2));
+				if(distance <= 900){
+					bulletNear = true;
+					human[humanID].nearestBullet = i;
+				}
+			}
+		}
+		return bulletNear;
 	}
 	private void zombieHumanMovement(int humanID, float zombieX, float zombieY){
 		double angle = Math.atan2(human[humanID].y - zombieY, human[humanID].x - zombieX);

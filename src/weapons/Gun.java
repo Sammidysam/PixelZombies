@@ -11,7 +11,9 @@ public class Gun extends Weapon {
 	public boolean equipped = false;
 	public float x;
 	public float y;
-	double angle;
+	private double angle;
+	public int equippedBy = 50;
+	public int equippedNumber = 101;
 	public int ENTITYID;
 	public static final int RADIUS = 8;
 	Image image;
@@ -51,5 +53,10 @@ public class Gun extends Weapon {
 			rectangle.setCenterX(y + ((HEIGHT * SCALE) / 2));
 		}
 		return rectangle;
+	}
+	public void reset(){
+		equipped = false;
+		equippedBy = 50;
+		equippedNumber = 101;
 	}
 }

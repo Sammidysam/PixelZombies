@@ -5,9 +5,9 @@ import java.util.Random;
 public class VillageGenerator {
 	private Random rand = new Random();
 	public Cabin[] cabin = new Cabin[100];
-	private Road[] road = new Road[100];
+	public Road[] road = new Road[100];
 	public int cabinNumber = 0;
-	private int roadNumber = 0;
+	public int roadNumber = 0;
 	public void loop(float humanx, float humany){
 		for(int i = 0; i < cabinNumber; i++)
 			cabin[i].draw(humanx, humany);

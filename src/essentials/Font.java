@@ -19,6 +19,11 @@ public class Font {
 		}
 		for(int i = 0, addX = 0, addY = 0; i < 41; i++){
 			letterImages[i] = letterSheet.getSubImage(addX, addY);
+			try {
+				letterImages[i].setFilter(Image.FILTER_NEAREST);
+			} catch (SlickException e) {
+				e.printStackTrace();
+			}
 			addX++;
 			if(i == 25){
 				addX = 0;

@@ -9,7 +9,7 @@ public class Road extends VillageObject {
 	private Image image;
 	public float angle;
 	private float x;
-	private float y;
+	public float y;
 	public Road(float x, float y, float angle){
 		this.x = x;
 		this.y = y;

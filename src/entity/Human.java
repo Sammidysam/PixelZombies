@@ -14,6 +14,7 @@ public class Human extends Entity {
 	private float oldY;
 	public float movementX;
 	public float movementY;
+	public int bullets;
 	private Image image;
 	public boolean show = true;
 	public boolean dead = false;
@@ -22,6 +23,7 @@ public class Human extends Entity {
 	public boolean zombieNear = false;
 	public boolean gunNear = false;
 	public boolean knifeNear = false;
+	public boolean bulletNear = false;
 	public int direction = 8;
 	public boolean hasGun = false;
 	public boolean hasKnife = false;
@@ -30,6 +32,7 @@ public class Human extends Entity {
 	public int nearestZombie;
 	public int nearestGun;
 	public int nearestKnife;
+	public int nearestBullet;
 	public final float SPEED = generateSpeed();
 	public int ENTITYID;
 	public Human(float x, float y, int id){
@@ -46,7 +49,7 @@ public class Human extends Entity {
 		if(show && !dead){
 			oldX = x;
 			oldY = y;
-			if(!zombieNear && !gunNear && !knifeNear){
+			if(!zombieNear && !gunNear && !knifeNear && !bulletNear){
 				if(started == true){
 					moveInDirection(direction);
 					if(timekeeper.timeDifference() >= wait1){
@@ -66,7 +69,7 @@ public class Human extends Entity {
 				x += movementX;
 				y += movementY;
 			}
-			if(gunNear || knifeNear){
+			if(gunNear || knifeNear || bulletNear){
 				x -= movementX;
 				y -= movementY;
 			}
