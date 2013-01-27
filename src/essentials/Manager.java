@@ -5,7 +5,6 @@ import java.util.Random;
 import org.newdawn.slick.geom.Rectangle;
 
 import village.Cabin;
-import village.Road;
 import village.VillageGenerator;
 import weapons.*;
 
@@ -402,34 +401,45 @@ public class Manager {
 	private void populateVillage(){
 		for(int x = -200, y = 0; x < 200; x += 50){
 			x += rand.nextInt(10);
-			y += rand.nextInt(50);
+			y += rand.nextInt(20);
 			createNew(ID.HUMAN, x, y);
 			y = 0;
 		}
-		for(int i = 0, x = -200, y = 0; i < humanNumber; i++){
-			x = (int) human[i].x;
-			y -= (Cabin.HEIGHT * Cabin.SCALE) + (Human.HEIGHT * Human.SCALE) + rand.nextInt(10);
-			Rectangle rectangle = new Rectangle(x, y, Cabin.WIDTH * Cabin.SCALE, Cabin.HEIGHT * Cabin.SCALE);
-			if(rectangle.getCenterX() == x){
-				rectangle.setCenterX(x + ((Cabin.WIDTH * Cabin.SCALE) / 2));
-				rectangle.setCenterX(y + ((Cabin.HEIGHT * Cabin.SCALE) / 2));
-			}
-			boolean intersects = false;
-			for(int z = 0; z < humanNumber; z++)
-				if(rectangle.intersects(human[z].getRectangle()))
-					intersects = true;
-			if(rectangle.intersects(man.getRectangle()))
-				intersects = true;
-			for(int z = 0; z < villagegen.cabinNumber; z++)
-				if(rectangle.intersects(villagegen.cabin[z].getRectangle()))
-					intersects = true;
-			if(!intersects){
-				villagegen.createCabin(x, y);
-				for(int u = 0; u < 2; u++)
-					villagegen.createRoad(x + (Road.WIDTH * u), y + (Cabin.HEIGHT * Cabin.SCALE) + rand.nextInt(10), 0);
-			}
-			y = 0;
+		float lowestX = Integer.MAX_VALUE, lowestY = Integer.MAX_VALUE;
+		for(int i = 0; i < humanNumber; i++){
+//			x = (int) human[i].x;
+//			y -= (Cabin.HEIGHT * Cabin.SCALE) + (Human.HEIGHT * Human.SCALE) + rand.nextInt(10);
+//			Rectangle rectangle = new Rectangle(x, y, Cabin.WIDTH * Cabin.SCALE, Cabin.HEIGHT * Cabin.SCALE);
+//			if(rectangle.getCenterX() == x){
+//				rectangle.setCenterX(x + ((Cabin.WIDTH * Cabin.SCALE) / 2));
+//				rectangle.setCenterX(y + ((Cabin.HEIGHT * Cabin.SCALE) / 2));
+//			}
+//			boolean intersects = false;
+//			for(int z = 0; z < humanNumber; z++)
+//				if(rectangle.intersects(human[z].getRectangle()))
+//					intersects = true;
+//			if(rectangle.intersects(man.getRectangle()))
+//				intersects = true;
+//			for(int z = 0; z < villagegen.cabinNumber; z++)
+//				if(rectangle.intersects(villagegen.cabin[z].getRectangle()))
+//					intersects = true;
+//			if(!intersects){
+//				villagegen.createCabin(x, y);
+//				for(int u = 0; u < 2; u++)
+//					villagegen.createRoad(x + (Road.WIDTH * u), y + (Cabin.HEIGHT * Cabin.SCALE) + rand.nextInt(10), 0);
+//			}
+//			y = 0;
+			if(human[i].y < lowestY)
+				lowestY = human[i].y;
+			if(human[i].x < lowestX)
+				lowestX = human[i].x;
 		}
+		if(man.y < lowestY)
+			lowestY = man.y;
+		if(man.x < lowestX)
+			lowestX = man.x;
+		villagegen.createStreet(lowestX - (Cabin.WIDTH * Cabin.SCALE), lowestY - (Cabin.HEIGHT * Cabin.SCALE) - (Human.HEIGHT * Human.SCALE), 8, 0);
+		villagegen.createStreet(lowestX - (Cabin.WIDTH * Cabin.SCALE), lowestY - (Cabin.HEIGHT * Cabin.SCALE) - (Human.HEIGHT * Human.SCALE) + villagegen.getStreetDimension(0), 8, 180);
 	}
 	public int idealCameraX(){
 		return (int) (man.x + 16);
