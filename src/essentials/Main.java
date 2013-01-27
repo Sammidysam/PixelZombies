@@ -77,6 +77,7 @@ public class Main implements Game {
 	    if(started){
 	    	g.setBackground(new Color(0, day.getGreen(), 0));
 	    	entity.render();
+		    font.drawString("zombies killed:  " + entity.getKilledZombies(), ((-width / 2) + cameraX) + (width / 2 / 30), ((height / 2) * 0.6225F) + cameraY, Color.white, 0.9F);
 		    font.drawString("bullets:  " + entity.getBullets(), ((-width / 2) + cameraX) + (width / 2 / 30), ((height / 2) * 0.7F) + cameraY, Color.white, 0.9F);
 		    if(entity.hasGun())
 		    	font.drawString("has gun", ((-width / 2) + cameraX) + (width / 2 / 30), ((height / 2) * 0.775F) + cameraY, Color.white, 0.9F);

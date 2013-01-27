@@ -35,6 +35,8 @@ public class Human extends Entity {
 	public int nearestBullet;
 	public final float SPEED = generateSpeed();
 	public int ENTITYID;
+	public boolean goForWeapon = true;
+	public long time;
 	public Human(float x, float y, int id){
 		this.x = x;
 		this.y = y;
@@ -49,7 +51,7 @@ public class Human extends Entity {
 		if(show && !dead){
 			oldX = x;
 			oldY = y;
-			if(!zombieNear && !gunNear && !knifeNear && !bulletNear){
+			if((!zombieNear && !gunNear && !knifeNear && !bulletNear) || (!zombieNear && !goForWeapon)){
 				if(started == true){
 					moveInDirection(direction);
 					if(timekeeper.timeDifference() >= wait1){
@@ -65,13 +67,16 @@ public class Human extends Entity {
 					wait2 = (rand.nextInt(10) + 1) * 1000;
 				}
 			}
-			if(zombieNear){
-				x += movementX;
-				y += movementY;
-			}
-			if(gunNear || knifeNear || bulletNear){
+			boolean moved = false;
+			if((gunNear || knifeNear || bulletNear) && !moved && goForWeapon){
 				x -= movementX;
 				y -= movementY;
+				moved = true;
+			}
+			if(zombieNear && !moved){
+				x += movementX;
+				y += movementY;
+				moved = true;
 			}
 		}
 	}

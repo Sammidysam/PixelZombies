@@ -4,6 +4,9 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 
+import entity.Human;
+import entity.Player;
+
 public class Bullet {
 	public static final float SCALE = 1.0F;
 	public static final int WIDTH = 16;
@@ -17,9 +20,11 @@ public class Bullet {
 	public boolean done;
 	public boolean moving;
 	public int ENTITYID;
+	public Human human;
+	public Player player;
 	public static final float SPEED = 8.0F;
 	Image image;
-	public Bullet(float x, float y, float manx, float many, int id, boolean moving){
+	public Bullet(float x, float y, float manx, float many, int id, boolean moving, Player player, Human human){
 		angle = Math.atan2(y - many, x - manx);
 		this.moving = moving;
 		if(this.moving){
@@ -32,6 +37,8 @@ public class Bullet {
 		}
 		originX = manx;
 		originY = many;
+		this.human = human;
+		this.player = player;
 		this.ENTITYID = id;
 		try {
 			image = new Image("res/bullet.png");
