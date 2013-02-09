@@ -4,15 +4,9 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 public class Road extends VillageObject {
-	public static final int WIDTH = 64;
-	public static final int HEIGHT = 28;
-	private Image image;
 	public float angle;
-	private float x;
-	public float y;
 	public Road(float x, float y, float angle){
-		this.x = x;
-		this.y = y;
+		super(x, y);
 		this.angle = angle;
 		try {
 			image = new Image("res/road.png");
@@ -26,5 +20,14 @@ public class Road extends VillageObject {
 			angle = getNearest(angle, true);
 		rotated.setRotation(angle);
 		rotated.draw(x, y);
+	}
+	public int getWidth(){
+		return 64;
+	}
+	public int getHeight(){
+		return 28;
+	}
+	public float getScale(){
+		return 1;
 	}
 }

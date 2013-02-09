@@ -2,12 +2,20 @@ package village;
 
 import java.util.Random;
 
+import org.newdawn.slick.geom.Rectangle;
+
 public class VillageGenerator {
 	private Random rand = new Random();
 	public Cabin[] cabin = new Cabin[100];
 	public Road[] road = new Road[100];
+	private VillageObject cabinDimensions;
+	private VillageObject roadDimensions;
 	public int cabinNumber = 0;
 	public int roadNumber = 0;
+	public VillageGenerator(){
+		cabinDimensions = new Cabin(0, 0);
+		roadDimensions = new Road(0, 0, 0);
+	}
 	public void loop(float humanx, float humany){
 		for(int i = 0; i < cabinNumber; i++)
 			cabin[i].draw(humanx, humany);
@@ -19,16 +27,27 @@ public class VillageGenerator {
 			angle = getNearest(angle, true);
 		if(angle == 0){
 			for(int i = 0; i < length; i++){
-				createCabin(x + (i * (Cabin.WIDTH * Cabin.SCALE + (Cabin.WIDTH * Cabin.SCALE / 2))), y);
-				for(int u = 0; u < 2; u++)
-					createRoad((x + (i * (Cabin.WIDTH * Cabin.SCALE + (Cabin.WIDTH * Cabin.SCALE / 2)))) + (u * (Road.WIDTH)), y + (Cabin.HEIGHT * Cabin.SCALE) + 15, 0);
+				createCabin(x + (i * (cabinDimensions.getWidth() * cabinDimensions.getScale() + (cabinDimensions.getWidth() * cabinDimensions.getScale() / 2))), y);
+				for(int u = 0; u < 2; u++){
+					boolean collision = false;
+					Rectangle rectangle = new Rectangle((x + (i * (cabinDimensions.getWidth() * cabinDimensions.getScale() + (cabinDimensions.getWidth() * cabinDimensions.getScale() / 2)))) + (u * (roadDimensions.getWidth())), y + (cabinDimensions.getHeight() * cabinDimensions.getScale()) + 15, roadDimensions.getWidth(), roadDimensions.getHeight());
+					if(rectangle.getCenterX() == (x + (i * (cabinDimensions.getWidth() * cabinDimensions.getScale() + (cabinDimensions.getWidth() * cabinDimensions.getScale() / 2)))) + (u * (roadDimensions.getWidth()))){
+						rectangle.setX((x + (i * (cabinDimensions.getWidth() * cabinDimensions.getScale() + (cabinDimensions.getWidth() * cabinDimensions.getScale() / 2)))) + (u * (roadDimensions.getWidth())) + (roadDimensions.getWidth() / 2));
+						rectangle.setY(y + (cabinDimensions.getHeight() * cabinDimensions.getScale()) + 15 + (roadDimensions.getHeight() / 2));
+					}
+					for(int w = 0; w < roadNumber; w++)
+						if(rectangle.intersects(road[w].getRectangle()))
+							collision = true;
+					if(!collision)
+						createRoad((x + (i * (cabinDimensions.getWidth() * cabinDimensions.getScale() + (cabinDimensions.getWidth() * cabinDimensions.getScale() / 2)))) + (u * (roadDimensions.getWidth())), y + (cabinDimensions.getHeight() * cabinDimensions.getScale()) + 15, 0);
+				}
 			}
 		}
 		if(angle == 180){
 			for(int i = 0; i < length; i++){
-				createCabin(x + (i * (Cabin.WIDTH * Cabin.SCALE + (Cabin.WIDTH * Cabin.SCALE / 2))), y);
+				createCabin(x + (i * (cabinDimensions.getWidth() * cabinDimensions.getScale() + (cabinDimensions.getWidth() * cabinDimensions.getScale() / 2))), y);
 				for(int u = 0; u < 2; u++)
-					createRoad((x + (i * (Cabin.WIDTH * Cabin.SCALE + (Cabin.WIDTH * Cabin.SCALE / 2)))) + (u * (Road.WIDTH)), y - (Cabin.HEIGHT * Cabin.SCALE) + 15, 0);
+					createRoad((x + (i * (cabinDimensions.getWidth() * cabinDimensions.getScale() + (cabinDimensions.getWidth() * cabinDimensions.getScale() / 2)))) + (u * (roadDimensions.getWidth())), y - (cabinDimensions.getHeight() * cabinDimensions.getScale()) + 15, 0);
 			}
 		}
 		if(angle == 90){
@@ -44,13 +63,13 @@ public class VillageGenerator {
 		float distance = 0;
 		switch ((int) angle){
 			case 0:
-				distance = (Cabin.HEIGHT * Cabin.SCALE) + (Road.HEIGHT) + 45;
+				distance = (cabinDimensions.getHeight() * cabinDimensions.getScale()) + (roadDimensions.getHeight()) + 45;
 				break;
 			case 90:
 	//			put in distance
 				break;
 			case 180:
-				distance = (Cabin.HEIGHT * Cabin.SCALE) + (Road.HEIGHT) + 45;
+				distance = (cabinDimensions.getHeight() * cabinDimensions.getScale()) + (roadDimensions.getHeight()) + 45;
 				break;
 			case 270:
 	//			put in distance

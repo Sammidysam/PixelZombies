@@ -4,8 +4,7 @@ import java.util.Random;
 
 import org.newdawn.slick.geom.Rectangle;
 
-import village.Cabin;
-import village.VillageGenerator;
+import village.*;
 import weapons.*;
 
 import entity.Human;
@@ -20,7 +19,7 @@ public class Manager {
 	private Gun[] gun = new Gun[100];
 	private Knife[] knife = new Knife[100];
 	private TimeKeeper timekeeper = new TimeKeeper();
-	private VillageGenerator villagegen = new VillageGenerator();
+	private VillageGenerator villagegen;
 	private int humanNumber = 0;
 	private int zombieNumber = 0;
 	private int bulletNumber = 0;
@@ -33,6 +32,7 @@ public class Manager {
 	public void loop(float mouseX, float mouseY){
 		if(man == null){
 			createNew(ID.PLAYER, -16, -16);
+			villagegen = new VillageGenerator();
 			populateVillage();
 			boolean makeGun = rand.nextBoolean();
 			int locationX = rand.nextInt(500) - 250, locationY = rand.nextInt(500) - 250;
@@ -408,11 +408,11 @@ public class Manager {
 		float lowestX = Integer.MAX_VALUE, lowestY = Integer.MAX_VALUE;
 		for(int i = 0; i < humanNumber; i++){
 //			x = (int) human[i].x;
-//			y -= (Cabin.HEIGHT * Cabin.SCALE) + (Human.HEIGHT * Human.SCALE) + rand.nextInt(10);
-//			Rectangle rectangle = new Rectangle(x, y, Cabin.WIDTH * Cabin.SCALE, Cabin.HEIGHT * Cabin.SCALE);
+//			y -= (cabinDimensions.getHeight() * cabinDimensions.getScale()) + (Human.HEIGHT * Human.SCALE) + rand.nextInt(10);
+//			Rectangle rectangle = new Rectangle(x, y, cabinDimensions.getWidth() * cabinDimensions.getScale(), cabinDimensions.getHeight() * cabinDimensions.getScale());
 //			if(rectangle.getCenterX() == x){
-//				rectangle.setCenterX(x + ((Cabin.WIDTH * Cabin.SCALE) / 2));
-//				rectangle.setCenterX(y + ((Cabin.HEIGHT * Cabin.SCALE) / 2));
+//				rectangle.setCenterX(x + ((cabinDimensions.getWidth() * cabinDimensions.getScale()) / 2));
+//				rectangle.setCenterX(y + ((cabinDimensions.getHeight() * cabinDimensions.getScale()) / 2));
 //			}
 //			boolean intersects = false;
 //			for(int z = 0; z < humanNumber; z++)
@@ -426,7 +426,7 @@ public class Manager {
 //			if(!intersects){
 //				villagegen.createCabin(x, y);
 //				for(int u = 0; u < 2; u++)
-//					villagegen.createRoad(x + (Road.WIDTH * u), y + (Cabin.HEIGHT * Cabin.SCALE) + rand.nextInt(10), 0);
+//					villagegen.createRoad(x + (Road.WIDTH * u), y + (cabinDimensions.getHeight() * cabinDimensions.getScale()) + rand.nextInt(10), 0);
 //			}
 //			y = 0;
 			if(human[i].y < lowestY)
@@ -438,8 +438,9 @@ public class Manager {
 			lowestY = man.y;
 		if(man.x < lowestX)
 			lowestX = man.x;
-		villagegen.createStreet(lowestX - (Cabin.WIDTH * Cabin.SCALE), lowestY - (Cabin.HEIGHT * Cabin.SCALE) - (Human.HEIGHT * Human.SCALE), 8, 0);
-		villagegen.createStreet(lowestX - (Cabin.WIDTH * Cabin.SCALE), lowestY - (Cabin.HEIGHT * Cabin.SCALE) - (Human.HEIGHT * Human.SCALE) + villagegen.getStreetDimension(0), 8, 180);
+		VillageObject cabinDimensions = new Cabin(0, 0);
+		villagegen.createStreet(lowestX - (cabinDimensions.getWidth() * cabinDimensions.getScale()), lowestY - (cabinDimensions.getHeight() * cabinDimensions.getScale()) - (Human.HEIGHT * Human.SCALE), 8, 0);
+		villagegen.createStreet(lowestX - (cabinDimensions.getWidth() * cabinDimensions.getScale()), lowestY - (cabinDimensions.getHeight() * cabinDimensions.getScale()) - (Human.HEIGHT * Human.SCALE) + villagegen.getStreetDimension(0), 8, 180);
 	}
 	public int idealCameraX(){
 		return (int) (man.x + 16);

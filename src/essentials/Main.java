@@ -65,10 +65,10 @@ public class Main implements Game {
 	    button[0] = new Button((int)(-80 + cameraX), (int)(height / 2 - 205 + cameraY), font.getLength("resume", 1.75F), (int) (1.75 * 20));
 	    button[1] = new Button((int)(-145 + cameraX), (int)(height / 2 - 255 + cameraY), font.getLength("quit to menu", 1.75F) + 4, (int) (1.75 * 20));
 	    button[2] = new Button((int)(-172 + cameraX), (int)(height / 2 - 305 + cameraY), font.getLength("quit to desktop", 1.75F), (int) (1.75 * 20));
+	    entity.loop(0, 0);
 	}
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		g.translate(width / 2 - cameraX, height / 2 - cameraY);
-		g.setDrawMode(Graphics.MODE_NORMAL);
 	    if(!started){
 	    	g.setBackground(Color.black);
 	    	font.drawString("press space to begin", -320, (height / 2) * 0.85F, Color.red, 2.5F);
@@ -111,7 +111,8 @@ public class Main implements Game {
 	public void update(GameContainer gc, int g) throws SlickException {
 		Input input = gc.getInput();
 		if(!gc.isPaused()){
-		    entity.loop(translate(input.getAbsoluteMouseX() + cameraX, true), translate(input.getAbsoluteMouseY() + cameraY, false));
+			if(started)
+				entity.loop(translate(input.getAbsoluteMouseX() + cameraX, true), translate(input.getAbsoluteMouseY() + cameraY, false));
 			if(started){
 			    if(input.isKeyDown(Input.KEY_ESCAPE)){
 			    	if(!gc.isPaused()){
