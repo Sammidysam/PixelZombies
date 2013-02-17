@@ -34,6 +34,7 @@ public class Main implements Game {
 			scanner.nextLine();
 			fullscreen = Boolean.parseBoolean(scanner.nextLine());
 			System.out.println(fullscreen);
+			scanner.close();
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
