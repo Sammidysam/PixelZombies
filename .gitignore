@@ -11,7 +11,6 @@ tmp/
 *.bak
 *.swp
 *~.nib
-*.jar
 .native/
 local.properties
 .classpath
