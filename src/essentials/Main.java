@@ -30,7 +30,7 @@ public class Main implements Game {
 		System.setProperty("org.lwjgl.librarypath", new File(new File(System.getProperty("user.dir"), "native"), LWJGLUtil.getPlatformName()).getAbsolutePath());
 		System.setProperty("net.java.games.input.librarypath", System.getProperty("org.lwjgl.librarypath"));
 		try {
-			Scanner scanner = new Scanner(new File(System.getProperty("user.dir"), "Options.ini"));
+			Scanner scanner = new Scanner(new File(System.getProperty("user.dir"), "Options.txt"));
 			scanner.nextLine();
 			fullscreen = Boolean.parseBoolean(scanner.nextLine());
 			System.out.println(fullscreen);
